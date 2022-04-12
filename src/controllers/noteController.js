@@ -18,7 +18,7 @@ async function getNote(request, response, next) {
 // get all the note from database
 async function getAllNote(request, response) {
     // fetch aand return all users from the database
-    const note = await Note.find({});
+    const note = await Note.find({}).sort({"createdOn":"-1"});
     return response.status(200).send({ response: note });
 }
 

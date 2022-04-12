@@ -1,4 +1,5 @@
 
+const authRouter= require('./src/routes/authRoute.js');
 const userRouter= require('./src/routes/userRoute.js');
 const noteRouter= require('./src/routes/noteRoute.js');
 const express = require('express');
@@ -50,7 +51,9 @@ var corsOptions = {
 
 app.use('/parse', parseServerAPI);
 app.use("/users",cors(corsOptions), userRouter);
-app.use("/notes",cors(corsOptions), noteRouter);
+app.use("/notes",cors(), noteRouter);
+app.use("/auth",cors(), authRouter);
+
 
 app.listen(SERVER_PORT, () => console.log(
     `Notre serveur tourne en mode ${process.env.NODE_ENV || 'development'} sur http://localhost:${SERVER_PORT}`
