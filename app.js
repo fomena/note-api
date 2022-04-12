@@ -27,16 +27,16 @@ mongoose.connect( process.env.DATABASE_URI ).then(()=>console.log('database conn
 var app = express();
 app.use(express.json());
 // Configuration of the parse Server
-// const parseServerAPI = new ParseServer({
-//     databaseURI: DATABASE_URI,
-//     cloud: path.resolve(__dirname, 'cloud.js'),
-//     appId: APP_ID,
-//     masterKey: MASTER_KEY,
-//     serverURL: `http://${SERVER_HOST}:${SERVER_PORT}/parse`
-// });
+const parseServerAPI = new ParseServer({
+    databaseURI: DATABASE_URI,
+    cloud: path.resolve(__dirname, 'cloud.js'),
+    appId: APP_ID,
+    masterKey: MASTER_KEY,
+    serverURL: `http://${SERVER_HOST}:${SERVER_PORT}/parse`
+});
 
 
-// app.use('/parse', parseServerAPI);
+app.use('/parse', parseServerAPI);
 app.use("/users", userRouter);
 app.use("/notes", noteRouter);
 
