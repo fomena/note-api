@@ -11,11 +11,15 @@ const userValidationSchema = Joi.object({
 });
 
 
-async function getUsers(id) {
+async function getUser(request, response) {
     // fetch aand return all users from the database
 	
-	const users = await User.findOne({_id:id});
-    return users;
+	const user = await User.findOne({_id:request.params.id});
+	if (!user) {
+		return response.status(400).send({response:"user not exist!"});
+		
+	}
+    return response.status(200).send({response:user});
 }
 
 async function userExists( email) {
@@ -26,11 +30,8 @@ async function userExists( email) {
 	return false;
 }
 
-// the controller for handling get requests
-async function getUsersController(_, response) {
-    const users = await getUsers();
-    response.status(200).send(users)
-}
+
+
 
 // the controller for creating new users
 async function addUserController(request, response) {
@@ -67,4 +68,4 @@ async function addUserController(request, response) {
 		.send({ message: `user ${validation.value.username} created!` });
 }
 
-module.exports = { getUsersController, addUserController };
+module.exports = {addUserController ,getUser};

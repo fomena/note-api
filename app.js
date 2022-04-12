@@ -5,6 +5,8 @@ const express = require('express');
 const ParseServer = require('parse-server').ParseServer;
 const ParseDashboard=require('parse-dashboard')
 const path = require('path');
+const cors = require('cors')
+
 const mongoose = require("mongoose");
 
 require('dotenv').config();
@@ -26,6 +28,7 @@ mongoose.connect( process.env.DATABASE_URI ).then(()=>console.log('database conn
 
 var app = express();
 app.use(express.json());
+app.use(cors())
 // Configuration of the parse Server
 const parseServerAPI = new ParseServer({
     databaseURI: DATABASE_URI,
@@ -34,11 +37,20 @@ const parseServerAPI = new ParseServer({
     masterKey: MASTER_KEY,
     serverURL: `http://${SERVER_HOST}:${SERVER_PORT}/parse`
 });
-
+let corsWhiteList=['http://localhost:3000']
+var corsOptions = {
+	origin: function (origin, callback) {
+		if (corsWhiteList.indexOf(origin) !== -1) {
+			callback(null, true);
+		} else {
+			callback("Request not allowed");
+		}
+	},
+};
 
 app.use('/parse', parseServerAPI);
-app.use("/users", userRouter);
-app.use("/notes", noteRouter);
+app.use("/users",cors(corsOptions), userRouter);
+app.use("/notes",cors(corsOptions), noteRouter);
 
 app.listen(SERVER_PORT, () => console.log(
     `Notre serveur tourne en mode ${process.env.NODE_ENV || 'development'} sur http://localhost:${SERVER_PORT}`

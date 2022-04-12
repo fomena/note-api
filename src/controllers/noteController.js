@@ -3,24 +3,30 @@ const { Note } = require("../models/model.js")
 
 // define the validation schema
 const noteValidationSchema = Joi.object().keys({
-
+    userId: Joi.string().required(),
     textNote: Joi.string().required(),
 
 });
 
-
-async function getNote(request, response) {
+// get speciphique note
+async function getNote(request, response, next) {
     // fetch aand return all users from the database
-
-    const note = await Note.findOne({ _id: request.body.id });
-    return note;
+    console.log('valeur du paramettre', request.params.id)
+    const note = await Note.findOne({ _id: request.params.id });
+    return response.status(200).send({ response: note });
+}
+// get all the note from database
+async function getAllNote(request, response) {
+    // fetch aand return all users from the database
+    const note = await Note.find({});
+    return response.status(200).send({ response: note });
 }
 
 
 
 
 // the controller for creating new users
-async function create(request, response) {
+async function create(request, response, next) {
     // validate the body of the content
     const validation = noteValidationSchema.validate(request.body);
 
@@ -29,19 +35,20 @@ async function create(request, response) {
         response.status(400).send({ error: validation.error.details[0].message });
         return;
     }
-
-
-
     // else create the note in the database
+    const note = await Note.create({
+        userId: validation.value.userId,
+        textNote: validation.value.textNote
 
-    const note  =  await Note.create({textNote: validation.value.textNote,function (err, note) {if (err) return handleError(err);}});
-    // const result = await note.save();
-    console.log('validation' ,note)
+    });
+    
+    console.log('validation', note)
 
     // return the created user
+    response.setHeader('Access-Control-Allow-Origin', '*');
     response
         .status(201)
-        .send({ message: 'Note created!' });
+        .send({ response:note});
 }
 
 
@@ -58,4 +65,4 @@ async function editNote(request, response) {
 
 }
 
-module.exports = { getNote, create, editNote };
+module.exports = { getNote, create, editNote, getAllNote };
